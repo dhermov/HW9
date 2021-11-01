@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+	<title>Setlist</title>
+	<meta charset="utf-8"/>
+	<script>
+        //function for dropdown
+        function loadMatchingGenre() {
+
+            //get the genre value 
+ 			theFilter = document.forms[0].genre.value;
+
+            strHTML = "<ul>";
+            //loop through genre array to find the matching songs
+            setlists.forEach(function(track) { 
+                    if (theFilter == track.genre[0])
+					 //print the genres match, print the song, and hide everything else 
+                     strHTML += "<li>" + track.artist + " <br /> " + track.songName + " <br /> " + track.genre[0] + 
+                        " <br /> " + track.year + " <br /> " + "</li>" ;
+                        document.getElementById("data").innerHTML =strHTML; 
+					}) 
+            
+		}
+
+
+//this function was made in reference to Prof. Diorio's example in class 
+		function loadFile() {
+			request = new XMLHttpRequest();
+
+			//use link developed on github to read in json data 
+			request.open("GET", "https://dhermov.github.io/AJAXSetlist/setlistData.json", true);
+ 
+			//Read in data
+			request.onreadystatechange = function() {
+                //show appropriate message once data is loaded in
+				if (request.readyState == 4 && request.status == 200) {
+
+					result = request.responseText;
+					setlists = JSON.parse(result);
+					
+					strHTML = "<ul>";
+					setlists.forEach(function(track) { 
+					  strHTML += "<li>" + track.artist + " <br /> " + track.songName + " <br /> " + track.genre[0] + " <br /> " + track.year + " <br /> " + "</li>" ;
+					}) 
+					strHTML += "</ul>";
+					document.getElementById("data").innerHTML =strHTML;  
+				}
+				else if (request.readyState == 4 && request.status != 200) {
+				document.getElementById("data").innerHTML = "Something is wrong!";
+				}
+
+				else if (request.readyState == 3) {
+					document.getElementById("data").innerHTML = "Far too soon! Try again";
+				}
+
+			}
+		//Send the HTTP request
+			request.send();
+		}
+	</script>
+</head>
+
+
+<body style="background-color:#ced4c8; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;" onload="loadFile()">
+
+	<h1 style= "color: #39422f">Setlist</h1>
+   <!---Use body section to display data, button and let user filter based on genre--->
+    <form id="genreSelect">
+        <label for="genre">Pick a genre to find songs for: </label>
+        <select id = "genre" name = "genre" style= "font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+            <option value= "Pop"> Pop </option>
+            <option value= "Rock"> Rock </option>
+            <option value= "Alternative"> Alternative </option>
+            <option value= "Regional Mexican"> Regional Mexican </option>
+            <option value= "Classic Rock"> Classic Rock </option>
+            <option value= "Electronic"> Electronic </option>
+            <option value= "Hip-Hop"> Hip-Hop </option>
+        </select>
+        <br><button type = "button" value="Get Response" onclick="loadMatchingGenre()" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Filter</button>
+    </form>
+    <div id="cData">&nbsp;</div>
+    <div id="data">Loading...</div>
+</body>
+</html>
